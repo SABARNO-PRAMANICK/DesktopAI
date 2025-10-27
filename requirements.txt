@@ -1,0 +1,12 @@
+fastapi
+pydantic
+python-multipart
+requests
+uvicorn[standard]
+
+faster-whisper
+sqlalchemy
+
+mss
+pyautogui
+pyinstaller

@@ -1,0 +1,87 @@
+
+services:
+  ollama:
+    build: ./services/ollama  # Custom with curl
+    container_name: agi_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./data/ollama_models:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]  # /version: Faster than /tags (no models needed)
+      interval: 20s
+      timeout: 30s
+      retries: 5
+      start_period: 60s  # Wait 1min for startup
+    networks:
+      - backend
+
+  ocr:
+    build: ./services/ocr
+    container_name: agi_ocr
+    ports:
+      - "8001:8000"  # Host:Container port
+    volumes:
+      - ./data:/app/data  # Shared for clips/screenshots
+    environment:
+      - OLLAMA_URL=http://ollama:11434  # Internal service name
+      - DATA_PATH=/app/data
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - backend
+
+  stt:
+    build: ./services/stt
+    container_name: agi_stt
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./data:/app/data  # For audio clips
+    environment:
+      - DATA_PATH=/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - backend
+
+  db:
+    build: ./services/db
+    container_name: agi_db
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./data:/app/data  # SQLite DB file here
+    environment:
+      - DB_PATH=/app/data/agi_assistant.db
+      - DATA_PATH=/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  data:
+    driver: local

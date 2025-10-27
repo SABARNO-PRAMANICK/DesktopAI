@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+faster-whisper
+pydantic
+python-multipart
+torch
+scipy
+sounddevice
+soundfile
