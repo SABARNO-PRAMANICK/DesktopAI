@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 # Env vars
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 DATA_PATH = os.getenv("DATA_PATH", "/app/data")
-MODEL_NAME = "gemma3:latest"  # Matches pulled model (4B variant, 3.3GB)
+MODEL_NAME = "llava:7b"  
 
 app = FastAPI(title="AGI OCR Service", version="1.0.0", description="Vision-based OCR for UI actions")
 
@@ -124,21 +124,18 @@ async def process_image(
     logger.debug("Image base64 encoded")
 
     # Improved prompt: Explicit, image-focused, no examples (Gemma follows better)
-    prompt = """You are analyzing a screenshot of a VS Code editor showing a file tree for an AGI Assistant project.
+    prompt = """Analyze this screenshot for desktop UI workflow. Extract visible text (OCR). Detect UI elements and infer actions: clicks, typing, navigation.
 
-1. Extract ALL visible text accurately (OCR) from file names, folders, code snippets.
-2. Infer UI actions: clicks on files/folders, typing in editor.
-
-Output ONLY valid JSON, no markdown or extra text:
+Output ONLY JSON:
 {
-  "extracted_text": "Concatenated all text from the image",
+  "extracted_text": "All screen text",
   "actions": [
-    {"type": "click", "element": "specific file/folder name", "position": [approx_x, approx_y]},
-    {"type": "type", "element": "editor line", "value": "code snippet"}
+    {"type": "click", "element": "file name", "position": [x, y], "bounds": [x1,y1,x2,y2]},
+    {"type": "type", "element": "editor", "value": "typed content"}
   ]
 }
 
-Focus on THIS image only. Be precise with file names like 'docker-compose.yml', 'ocr_service.py'."""
+Focus on file tree/UI elements like 'docker-compose.yml'."""
 
     # Call Ollama (increase timeout to 120s for vision)
     ollama_payload = {
