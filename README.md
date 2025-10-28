@@ -14,7 +14,7 @@ A **desktop-based AI assistant MVP** that **observes** your screen/audio, **unde
 
 **Architecture Diagram**:
 [GUI .exe] ↔ HTTP ↔ [Docker Backend]
-├── Ollama (Phi-3, Pixtral OCR)
+├── Ollama (qwen2:7b, llava:7b)
 ├── OCR Service (FastAPI)
 ├── STT Service (faster-whisper)
 └── DB Service (SQLite + SQLAlchemy)
@@ -53,6 +53,13 @@ See [QUICKSTART_DAY1.md](QUICKSTART_DAY1.md) for <10min setup.
 - Backend: `bash scripts/test_services.sh`.
 - End-to-End: Record screen → Check `/data/` for JSON → Automate sample workflow.
 - Demo: See [DEMO_SCRIPT.md](DEMO_SCRIPT.md) (TBD).
+
+## Quick Setup
+1. Unzip AGI_Assistant_v1.0.zip
+2. Install Docker Desktop
+3. Run `docker-compose up -d` (starts backend)
+4. Run `./dist/AGI_Assistant` (macOS) or `dist/AGI_Assistant.exe` (Windows)
+5. Test: Capture screenshot/audio → Analyze → Automate
 
 ## 🔧 Troubleshooting
 - **Ollama slow?** Pre-pull models: `bash scripts/download_models.sh`.
