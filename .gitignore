@@ -5,9 +5,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -27,7 +25,6 @@ MANIFEST
 # PyInstaller
 #  Usually created by: pip install pyinstaller
 *.manifest
-*.spec
 
 # Installer logs
 pip-log.txt
@@ -134,9 +131,7 @@ logs/
 ollama_models/
 test_data/  # Commit samples, ignore generated
 
-# Builds
-dist/
-build/
+
 
 # OS
 .DS_Store
